@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.design.communityManagementSystem.mapper.RepairsMapper">
+
+    <resultMap type="com.design.communityManagementSystem.pojo.Repairs" id="RepairsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userNo" column="user_no" jdbcType="VARCHAR"/>
+        <result property="telephone" column="telephone" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="faultImages" column="fault_images" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="descbs" column="descbs" jdbcType="VARCHAR"/>
+        <result property="repairsImages" column="repairs_images" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RepairsMap">
+        select
+          id, user_no, telephone, user_name, address, fault_images, created_at, descbs, repairs_images, status, user_id
+        from repairs
+        where id = #{id}
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into repairs(user_no, telephone, user_name, address, fault_images, created_at, descbs, repairs_images, status, user_id)
+        values (#{userNo}, #{telephone}, #{userName}, #{address}, #{faultImages}, now(), #{descbs}, #{repairsImages}, '待修中', #{userId})
+    </insert>
+        <!--用select进行分页查询-->
+      <select id="getPageListByCondition" resultMap="RepairsMap">
+
+        select *  from repairs where created_at is not null
+          <if test="page.key.userName != null and page.key.userName != ''">
+              and  user_name like '%' #{page.key.userName}  '%'
+          </if>
+          <if test="page.key.userNo != null and page.key.userNo != ''">
+              and  user_no like '%' #{page.key.userNo}  '%'
+          </if>
+          <if test="page.key.status != null and page.key.status != ''">
+              and  status like '%' #{page.key.status}  '%'
+          </if>
+          <if test="page.key.userId != null">
+              and  user_id = #{page.key.userId}
+          </if>
+            <!--排序 desc是降序-->
+        order by
+        created_at desc
+        <!--分页查询-->
+      
+        limit  #{page.startNum} , #{page.pageSize}
+    </select>
+     <!--分页查询条数-->
+    <select id="getPageListCount" resultType="int">
+        select count(id) as count from repairs   where created_at is not null
+        <if test="page.key.userName != null and page.key.userName != ''">
+            and  user_name like '%' #{page.key.userName}  '%'
+        </if>
+        <if test="page.key.userNo != null and page.key.userNo != ''">
+            and  user_no like '%' #{page.key.userNo}  '%'
+        </if>
+        <if test="page.key.status != null and page.key.status != ''">
+            and  status like '%' #{page.key.status}  '%'
+        </if>
+        <if test="page.key.userId != null">
+            and  user_id =  #{page.key.userId}
+        </if>
+    </select>
+
+   
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update repairs
+        <set>
+            <if test="userNo != null and userNo != ''">
+                user_no = #{userNo},
+            </if>
+            <if test="telephone != null and telephone != ''">
+                telephone = #{telephone},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="faultImages != null and faultImages != ''">
+                fault_images = #{faultImages},
+            </if>
+            <if test="createdAt != null">
+                created_at = #{createdAt},
+            </if>
+            <if test="descbs != null and descbs != ''">
+                descbs = #{descbs},
+            </if>
+            <if test="repairsImages != null and repairsImages != ''">
+                repairs_images = #{repairsImages},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from repairs where id = #{id}
+    </delete>
+
+</mapper>
+
